@@ -20,29 +20,28 @@ router.get('/search', async (req, res) => {
     await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/' + summoner + `/ids?start=0&count=20&api_key=${process.env.api_key}`)
         .then(res => {
             matches = res.data;
+            console.log(matches[[0]]);
+        })
+        .catch(err => {
+            console.error(err);
         });
-    const { data } = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + matches[0] + `?api_key=${process.env.api_key}`);
-    const participant = data.metadata.participants;
-    const participantInfo = [];
-    for (element of participant) {
-        await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + element + `?api_key=${process.env.api_key}`)
+    const data = [];
+    const mydata = [];
+    for (match of matches) {
+        await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + match + `?api_key=${process.env.api_key}`)
             .then(res => {
-                participantInfo.push(res.data.name);
+                data.push(res.data.info)
+                mydata.push(res.data.info.participants[res.data.metadata.participants.indexOf(summoner)])
             })
     }
-    let img;
-    axios.get('http://ddragon.leagueoflegends.com/cdn/12.9.1/data/ko_KR/champion/Aatrox.json')
-        .then(res => {
-            console.log(res.data.image);
-        })
-    console.log(participantInfo);
+    
     // participant.forEach(async element => {
     //     const user = await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + element + `?api_key=${process.env.api_key}`);
     //     console.log(user.data.name);
     //     participantInfo.push(user.data.name)
     // })
     // console.log(participantInfo);
-    res.render('result', {Infos: participantInfo});
+    res.render('result', { matches: data, myInfo: mydata });
 
     // matches.forEach(async (el) => {
     //     await axios.get()

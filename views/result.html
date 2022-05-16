@@ -1,19 +1,48 @@
 <head>
     <style>
-        .red {
-            color: red;
+        * {
+            margin: 0;
         }
 
-        .blue {
-            color: blue;
+        #match {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            height: 620px;
+            align-content: center;
+        }
+
+        .summoner {
+            display: inline-block;
+            width: 45%;
+            height: 124px;
+        }
+
+        .summoner-data {
+            position: relative;
+            bottom: 54px;
+        }
+
+        img {
+            width: 124px;
+            height: 124px;
+        }
+        .team200 {
+            background-color: #7c0a02;
+        }
+
+        .team100 {
+            background-color: #50bcdf;
         }
     </style>
 </head>
-<body>
-    <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/map/map12.png">
-    <div><span class="red">{{Infos[0]}}</span> <span class="blue">{{Infos[5]}}</span></div>
-    <div><span class="red">{{Infos[1]}}</span> <span class="blue">{{Infos[6]}}</span></div>
-    <div><span class="red">{{Infos[2]}}</span> <span class="blue">{{Infos[7]}}</span></div>
-    <div><span class="red">{{Infos[3]}}</span> <span class="blue">{{Infos[8]}}</span></div>
-    <div><span class="red">{{Infos[4]}}</span> <span class="blue">{{Infos[9]}}</span></div>
-</body>
+{% for match in matches %}
+<div id="match">
+{% for el in match.participants %}
+<div class="summoner team{{el.teamId}}">
+    <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if el.championName === 'FiddleSticks' %}Fiddlesticks{% else %}{{el.championName}}{% endif %}.png">
+    <span class="summoner-data">{{el.summonerName}} : {{el.kills}} / {{el.deaths}} / {{el.assists}} </span>
+</div>
+{% endfor %}
+</div>
+{% endfor %}
