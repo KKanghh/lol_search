@@ -34,14 +34,18 @@
         .team100 {
             background-color: #50bcdf;
         }
+
+        #match {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 {% for match in matches %}
 <div id="match">
-{% for el in match.participants %}
-<div class="summoner team{{el.teamId}}">
+{% for el in match %}
+<div class="summoner team{{el.team}}">
     <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if el.championName === 'FiddleSticks' %}Fiddlesticks{% else %}{{el.championName}}{% endif %}.png">
-    <span class="summoner-data">{{el.summonerName}} : {{el.kills}} / {{el.deaths}} / {{el.assists}} </span>
+    <span class="summoner-data">{{el.Summoners.name}} : {{el.kills}} / {{el.deaths}} / {{el.assists}} </span>
 </div>
 {% endfor %}
 </div>

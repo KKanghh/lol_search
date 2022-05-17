@@ -5,6 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
+const { sequelize } = require('./models');
 
 dotenv.config();
 
@@ -15,6 +16,13 @@ nunjucks.configure('views', {
     express: app,
     watch: true,
 });
+sequelize.sync({ force: false })
+    .then(() => {
+        console.log('데이터베이스 연결 성공');
+    })
+    .catch((err) => {
+        console.error(err);
+    });
 
 const indexRouter = require('./routes');
 
