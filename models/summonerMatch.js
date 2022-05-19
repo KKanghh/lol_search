@@ -41,6 +41,9 @@ module.exports = class SummonerMatch extends Sequelize.Model {
             },
             champion: {
                 type: Sequelize.STRING(20),
+            },
+            win: {
+                type: Sequelize.BOOLEAN,
             }
         }, {
             sequelize,
@@ -54,5 +57,8 @@ module.exports = class SummonerMatch extends Sequelize.Model {
         });
     }
 
-    static assoicate(db) {}
+    static assoicate(db) {
+        db.SummonerMatch.belongsTo(db.Summoner);
+        db.SummonerMatch.belongsTo(db.Match);
+    }
 };

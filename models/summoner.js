@@ -41,6 +41,6 @@ module.exports = class Summoner extends Sequelize.Model {
     }
 
     static assoicate(db) {
-        db.Summoner.belongsToMany(db.Match, { through: db.SummonerMatch });
+        db.Summoner.hasMany(db.SummonerMatch);
     }
 };

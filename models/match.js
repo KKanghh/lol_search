@@ -6,10 +6,16 @@ module.exports = class Match extends Sequelize.Model {
             id: {
                 type: Sequelize.STRING(15),
                 primaryKey: true,
+            },
+            mode: {
+                type: Sequelize.STRING(15),
+            },
+            duration: {
+                type: Sequelize.INTEGER,
             }
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: "Match",
             tableName: 'matchs',
@@ -20,8 +26,6 @@ module.exports = class Match extends Sequelize.Model {
     }
 
     static assoicate(db) {
-        db.Match.belongsToMany(db.Summoner, { 
-            through: db.SummonerMatch
-        });
+        db.Match.hasMany(db.SummonerMatch);
     }
 };

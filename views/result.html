@@ -4,24 +4,47 @@
             margin: 0;
         }
 
-        #match {
+        .blind {
+            display: none;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .myInfo {
+            height: 124px;
+            border: 1px black solid;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .win {
+            background-color: yellowgreen;
+        }
+
+        .lose {
+            background-color: peru;
+        }
+
+        .match {
             display: flex;
             flex-wrap: wrap;
             flex-direction: column;
             height: 620px;
-            align-content: center;
+            margin-bottom: 10px;
         }
 
         .summoner {
-            display: inline-block;
-            width: 45%;
+            display: flex;
+            /* width: 45%; */
             height: 124px;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .summoner-data {
-            position: relative;
-            bottom: 54px;
-        }
 
         img {
             width: 124px;
@@ -35,18 +58,69 @@
             background-color: #50bcdf;
         }
 
-        #match {
-            margin-bottom: 10px;
+        .item {
+            display: inline-block;
+            width: 140px;
+            height: 85px;
+        }
+
+        .gamemode {
+            text-align: center;
+        }
+        
+        .item-img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .no-item {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            background-color: white;
         }
     </style>
 </head>
+<body>
 {% for match in matches %}
-<div id="match">
-{% for el in match %}
-<div class="summoner team{{el.team}}">
-    <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if el.championName === 'FiddleSticks' %}Fiddlesticks{% else %}{{el.championName}}{% endif %}.png">
-    <span class="summoner-data">{{el.Summoners.name}} : {{el.kills}} / {{el.deaths}} / {{el.assists}} </span>
+<div class="container">
+    <div class="myInfo {% if match.mydata.win %}win{% else %}lose{% endif %}">
+        <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{{match.mydata.champion}}.png">
+        <div class="gamemode">
+            <div>{% if match.mydata.Match.mode === 'ARAM' %}칼바람 나락{% else %}소환사의 협곡{% endif %}</div>
+            <div>{{match.mydata.Match.duration // 60}}분 {{match.mydata.Match.duration % 60}}초</div>
+        </div>
+        <span>{{match.mydata.kill}} / {{match.mydata.death}} / {{match.mydata.assist}} </span>
+        {% if match.mydata.win %} 승리 {% else %} 패배 {% endif %}
+        <button class="moreInfo">더보기</button>
+    </div>
+    <div class="matchInfo blind">
+        {% for el in match.matchInfo %}
+        <div class="summoner team{{el.team}}">
+            <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if el.champion === 'FiddleSticks' %}Fiddlesticks{% else %}{{el.champion}}{% endif %}.png">
+            <span class="summoner-data">{{el.Summoner.name}} : {{el.kill}} / {{el.death}} / {{el.assist}} </span>
+            <div class="item">
+                {% if el.item1 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item1}}.png">{% else %}<div class="no-item"></div>{% endif %}
+                {% if el.item2 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item2}}.png">{% else %}<div class="no-item"></div>{% endif %}
+                {% if el.item3 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item3}}.png">{% else %}<div class="no-item"></div>{% endif %}
+                {% if el.item4 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item4}}.png">{% else %}<div class="no-item"></div>{% endif %}
+                {% if el.item5 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item5}}.png">{% else %}<div class="no-item"></div>{% endif %}
+                {% if el.item6 %}<img class="item-img" src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item6}}.png">{% else %}<div class="no-item"></div>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endfor %}
-</div>
-{% endfor %}
+<script>
+    const $container = document.querySelectorAll('.container');
+    for (e of $container) {
+        const $button = e.querySelector('.moreInfo');
+        const matchData = e.querySelector('.matchInfo');
+        $button.addEventListener('click', (e) => {
+            matchData.classList.toggle('match');
+            matchData.classList.toggle('blind');
+        })
+    }
+</script>
+</body>
