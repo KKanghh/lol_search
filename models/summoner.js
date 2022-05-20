@@ -22,6 +22,9 @@ module.exports = class Summoner extends Sequelize.Model {
             name: {
                 type: Sequelize.STRING(16),
             },
+            searchName: {
+                type: Sequelize.STRING(16),
+            },
             level: {
                 type: Sequelize.INTEGER,
             },

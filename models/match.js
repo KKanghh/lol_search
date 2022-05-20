@@ -12,6 +12,9 @@ module.exports = class Match extends Sequelize.Model {
             },
             duration: {
                 type: Sequelize.INTEGER,
+            },
+            playerCount: {
+                type: Sequelize.INTEGER,
             }
         }, {
             sequelize,

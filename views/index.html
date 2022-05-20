@@ -14,4 +14,11 @@
         </div>
     </form>
 </body>
+<script>
+    window.onload = () => {
+        if (new URL(location.href).searchParams.get('searchError')) {
+            alert(new URL(location.href).searchParams.get('searchError'));
+        }
+      };
+</script>
 </html>

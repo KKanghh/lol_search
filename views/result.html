@@ -87,7 +87,7 @@
     <div class="myInfo {% if match.mydata.win %}win{% else %}lose{% endif %}">
         <img src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{{match.mydata.champion}}.png">
         <div class="gamemode">
-            <div>{% if match.mydata.Match.mode === 'ARAM' %}칼바람 나락{% else %}소환사의 협곡{% endif %}</div>
+            <div>{% if match.mydata.Match.mode === 'ARAM' %}칼바람 나락{% elif match.mydata.Match.mode === 'URF' %}우르프{% else %}소환사의 협곡{% endif %}</div>
             <div>{{match.mydata.Match.duration // 60}}분 {{match.mydata.Match.duration % 60}}초</div>
         </div>
         <span>{{match.mydata.kill}} / {{match.mydata.death}} / {{match.mydata.assist}} </span>

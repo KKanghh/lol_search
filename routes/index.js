@@ -9,146 +9,150 @@ router.get('/', (req, res) => {
 })
 
 async function createSummonerByName(name) {
-    await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURIComponent(name) + `?api_key=${process.env.api_key}`)
-            .then(async res => {
-                await Summoner.create({
-                    name: res.data.name,
-                    puuid: res.data.puuid,
-                    accountId: res.data.accountId,
-                    id: res.data.id,
-                    level: res.data.summonerLevel,
-                    profileIcon: res.data.profileIconId,
-                });
-            })
-            .catch(err => {
-                console.error('에러:', err);
-                
-            });
+    try {
+        const result = await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURIComponent(name) + `?api_key=${process.env.api_key}`);
+        const playerData = result.data;
+        console.log('가져온 데이터:', playerData);
+        await Summoner.create({
+            name: playerData.name,
+            searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
+            puuid: playerData.puuid,
+            accountId: playerData.accountId,
+            id: playerData.id,
+            level: playerData.summonerLevel,
+            profileIcon: playerData.profileIconId,
+        });
+    } catch(err) {
+        console.error(err);
+        return err;
+    }
 }
 
 async function createSummonerByPuuid(puuid) {
-    await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + puuid + `?api_key=${process.env.api_key}`)
-            .then(async res => {
-                const user = await Summoner.create({
-                    name: res.data.name,
-                    puuid: res.data.puuid,
-                    accountId: res.data.accountId,
-                    id: res.data.id,
-                    level: res.data.summonerLevel,
-                    profileIcon: res.data.profileIconId,
-                })
-                return user;
-            })
-            .catch(err => {
-                console.error('에러:', err);
-            });
+    try {
+        const result = await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + puuid + `?api_key=${process.env.api_key}`);
+        const playerData = result.data;
+        console.log(playerData);
+        await Summoner.create({
+            name: playerData.name,
+            searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
+            puuid: playerData.puuid,
+            accountId: playerData.accountId,
+            id: playerData.id,
+            level: playerData.summonerLevel,
+            profileIcon: playerData.profileIconId,
+        })
+    } catch(err) {
+        console.error(err);
+        return err;
+    }
 }
 
 router.get('/search', async (req, res, next) => { 
     let matches = [];
+    const searchName = req.query.name.replace(/ /gi, '').toLowerCase();
     console.log(req.query.name);
     let summoner = await Summoner.findOne({ // 검색한 소환사 정보 저장 & 불러오기
-        where: { name: req.query.name }
+        where: { searchName }
     });
-    console.log('-----------', summoner);
     if (!summoner) {
-        await createSummonerByName(req.query.name);
+        try {
+            await createSummonerByName(req.query.name);
+        } catch (err) {
+            return next(err);
+        }
         summoner = await Summoner.findOne({
-            where: { name: req.query.name }
+            where: { searchName }
         });
     }
     if(!summoner) {
-        const error = new Error('입력한 사용자가 없습니다.');
-        error.status = 404;
-        next(error);
+        return res.redirect(`/?searchError=${req.query.name}을 찾을 수 없습니다.`);
     }
 
-    await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/' + summoner.puuid + `/ids?start=0&count=8&api_key=${process.env.api_key}`)
-        .then(async res => {
-            matches = res.data;
-            for (match of matches) {
-                try {
-                    const exMatch = await Match.findOne({
-                        where: { id: match }
-                    });
-                    if (!exMatch) {
-                        let mode, duration;
-                        await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + match + `?api_key=${process.env.api_key}`)
-                            .then(res => {
-                                mode = res.data.info.gameMode;
-                                duration = res.data.info.gameDuration;
-                            })
-                        await Match.create({
-                            id: match,
-                            mode,
-                            duration,
-                        });
-                    }
-                }
-                catch (err) {
-                    console.error(err);
-                    next(err);
-                }
+    try {
+        const res = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/' + summoner.puuid + `/ids?start=0&count=8&api_key=${process.env.api_key}`);
+        matches = res.data;
+        for (let match of matches) {
+            const exMatch = await Match.findOne({
+                where: { id: match }
+            });
+            if (!exMatch) {
+                let mode, duration, playerCount;
+                const result = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + match + `?api_key=${process.env.api_key}`);
+                const matchDataByPuuid = result.data;
+                mode = matchDataByPuuid.info.gameMode;
+                duration = matchDataByPuuid.info.gameDuration,
+                playerCount = matchDataByPuuid.metadata.participants.length;
+                await Match.create({
+                    id: match,
+                    mode,
+                    duration,
+                    playerCount,
+                });
             }
-        })
-        .catch(err => {
-            console.error(err);
-            next(err);
-        });
+        }
+    } catch(err) {
+        console.error(err);
+        return next(err);
+    }
 
-    for (match of matches) {
-        const exMatch = await SummonerMatch.findAll({
+    for (let match of matches) {
+        const matchPlayersData = await SummonerMatch.findAll({
             where: { 
                 MatchId: match,
             }
         });
-        if (exMatch.length != 10) {
-            await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + match + `?api_key=${process.env.api_key}`)
-                .then(async res => {
-                    try {
-                        for (let i = 0; i < 10; i++) {
-                            const exUser = await Summoner.findOne({
-                                where: { puuid: res.data.metadata.participants[i] }
-                            });
-                            if (!exUser) {
-                                await createSummonerByPuuid(res.data.info.participants[i].puuid);
-                            }
-                            const find = await SummonerMatch.findOne({
-                                where: {
-                                    MatchId: match,
-                                    SummonerPuuid: res.data.info.participants[i].puuid,
-                                }
-                            });
-                            console.log('find', find);
-                            if (!find) {
-                                await SummonerMatch.create({
-                                    MatchId: match,
-                                    SummonerPuuid: res.data.metadata.participants[i],
-                                    kill: res.data.info.participants[i].kills,
-                                    assist: res.data.info.participants[i].assists,
-                                    death: res.data.info.participants[i].deaths,
-                                    gold: res.data.info.participants[i].goldEarned,
-                                    item1: res.data.info.participants[i].item0,
-                                    item2: res.data.info.participants[i].item1,
-                                    item3: res.data.info.participants[i].item2,
-                                    item4: res.data.info.participants[i].item3,
-                                    item5: res.data.info.participants[i].item4,
-                                    item6: res.data.info.participants[i].item5,
-                                    item7: res.data.info.participants[i].item6,
-                                    team: res.data.info.participants[i].teamId.toString(),
-                                    champion: res.data.info.participants[i].championName,
-                                    win: res.data.info.participants[i].win,
-                                });
-                            }
+        const matchPlayerCount = await Match.findOne({
+            attributes: ['playerCount'],
+            where: {
+                id: match,
+            }
+        })
+        console.log(matchPlayerCount);
+        if (matchPlayersData.length < matchPlayerCount.playerCount) {
+            try {
+                const result = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/' + match + `?api_key=${process.env.api_key}`);
+                const matchDataByMatchId = result.data;
+                for (let i = 0; i < matchPlayerCount.playerCount; i++) {
+                    const exUser = await Summoner.findOne({
+                        where: { puuid: matchDataByMatchId.metadata.participants[i] }
+                    });
+                    if (!exUser) {
+                        await createSummonerByPuuid(matchDataByMatchId.info.participants[i].puuid);
+                    }
+                    const find = await SummonerMatch.findOne({
+                        where: {
+                            MatchId: match,
+                            SummonerPuuid: matchDataByMatchId.info.participants[i].puuid,
                         }
+                    });
+                    console.log('find', find);
+                    if (!find) {
+                        await SummonerMatch.create({
+                            MatchId: match,
+                            SummonerPuuid: matchDataByMatchId.metadata.participants[i],
+                            kill: matchDataByMatchId.info.participants[i].kills,
+                            assist: matchDataByMatchId.info.participants[i].assists,
+                            death: matchDataByMatchId.info.participants[i].deaths,
+                            gold: matchDataByMatchId.info.participants[i].goldEarned,
+                            item1: matchDataByMatchId.info.participants[i].item0,
+                            item2: matchDataByMatchId.info.participants[i].item1,
+                            item3: matchDataByMatchId.info.participants[i].item2,
+                            item4: matchDataByMatchId.info.participants[i].item3,
+                            item5: matchDataByMatchId.info.participants[i].item4,
+                            item6: matchDataByMatchId.info.participants[i].item5,
+                            item7: matchDataByMatchId.info.participants[i].item6,
+                            team: matchDataByMatchId.info.participants[i].teamId.toString(),
+                            champion: matchDataByMatchId.info.participants[i].championName,
+                            win: matchDataByMatchId.info.participants[i].win,
+                        });
                     }
-                    catch (err) {
-                        console.error(err);
-                        next(err);
-                    }
-                });
+                }
+            } catch (err) {
+                console.error(err);
+                return next(err);
+            }
         }
-        
     }
 
     const data = [];
@@ -179,11 +183,11 @@ router.get('/search', async (req, res, next) => {
             include: [{
                 model: Summoner,
             }]
-        });
+        })
         data.push(match);
     }
     
-    res.render('result', { matches: data });
+    return res.render('result', { matches: data });
 
     // matches.forEach(async (el) => {
     //     await axios.get()
