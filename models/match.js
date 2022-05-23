@@ -8,7 +8,7 @@ module.exports = class Match extends Sequelize.Model {
                 primaryKey: true,
             },
             mode: {
-                type: Sequelize.STRING(15),
+                type: Sequelize.STRING(20),
             },
             duration: {
                 type: Sequelize.INTEGER,

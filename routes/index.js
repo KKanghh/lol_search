@@ -3,6 +3,7 @@ const express = require('express');
 const { Summoner, Match, SummonerMatch } = require('../models');
 
 const router = express.Router();
+let searching = false;
 
 router.get('/', (req, res) => {
     res.render('index');
@@ -49,14 +50,17 @@ async function createSummonerByPuuid(puuid) {
 }
 
 router.get('/search', async (req, res, next) => { 
+    while (searching);
+    
+    searching = true;
     let matches = [];
     const searchName = req.query.name.replace(/ /gi, '').toLowerCase();
-    console.log(req.query.name);
+    console.log('최초 출력: ', req.query.name);
     let summoner = await Summoner.findOne({ // 검색한 소환사 정보 저장 & 불러오기
         where: { searchName }
     });
-    if (!summoner) {
-        try {
+    if (!summoner) { // DB에 해당 소환사 data 없음
+        try { // 소환사 정보 DB에 저장
             await createSummonerByName(req.query.name);
         } catch (err) {
             return next(err);
@@ -117,13 +121,14 @@ router.get('/search', async (req, res, next) => {
                     const exUser = await Summoner.findOne({
                         where: { puuid: matchDataByMatchId.metadata.participants[i] }
                     });
+                    console.log('exUser:', exUser);
                     if (!exUser) {
-                        await createSummonerByPuuid(matchDataByMatchId.info.participants[i].puuid);
+                        await createSummonerByPuuid(matchDataByMatchId.metadata.participants[i]);
                     }
                     const find = await SummonerMatch.findOne({
                         where: {
                             MatchId: match,
-                            SummonerPuuid: matchDataByMatchId.info.participants[i].puuid,
+                            SummonerPuuid: matchDataByMatchId.metadata.participants[i],
                         }
                     });
                     console.log('find', find);
@@ -187,6 +192,7 @@ router.get('/search', async (req, res, next) => {
         data.push(match);
     }
     
+    searching = false;
     return res.render('result', { matches: data });
 
     // matches.forEach(async (el) => {
