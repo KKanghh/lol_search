@@ -7,6 +7,9 @@ module.exports = class Match extends Sequelize.Model {
                 type: Sequelize.STRING(15),
                 primaryKey: true,
             },
+            gameCreation: {
+                type: Sequelize.STRING(14),
+            },
             mode: {
                 type: Sequelize.STRING(20),
             },

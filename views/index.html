@@ -7,7 +7,7 @@
     <title>롤 전적검색</title>
 </head>
 <body>
-    <form action="/search" method="get">
+    <form id="name" action="/summoner" method="post">
         <div>
             <input type="text" name="name">
             <input type="submit" value="검색">
@@ -19,6 +19,6 @@
         if (new URL(location.href).searchParams.get('searchError')) {
             alert(new URL(location.href).searchParams.get('searchError'));
         }
-      };
+    };
 </script>
 </html>

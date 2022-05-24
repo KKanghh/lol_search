@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+}
+
+.blind {
+    display: none;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.myInfo {
+    height: 124px;
+    border: 1px black solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.win {
+    background-color: yellowgreen;
+}
+
+.lose {
+    background-color: peru;
+}
+
+.match {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 620px;
+    margin-bottom: 10px;
+}
+
+.summoner {
+    display: flex;
+    /* width: 45%; */
+    height: 124px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+img {
+    width: 124px;
+    height: 124px;
+}
+.team200 {
+    background-color: #7c0a02;
+}
+
+.team100 {
+    background-color: #50bcdf;
+}
+
+.item {
+    display: inline-block;
+    width: 140px;
+    height: 85px;
+}
+
+.gamemode {
+    text-align: center;
+}
+
+.item-img {
+    width: 40px;
+    height: 40px;
+}
+
+.no-item {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    background-color: white;
+}
