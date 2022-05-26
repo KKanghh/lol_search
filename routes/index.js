@@ -41,10 +41,10 @@ async function createSummonerByPuuid(puuid) {
             id: playerData.id,
             level: playerData.summonerLevel,
             profileIcon: playerData.profileIconId,
-        })
+        });
     } catch(err) {
         console.error(err);
-        return err;
+        throw err;
     }
 }
 
@@ -62,11 +62,13 @@ router.route('/summoner')
             },
             include: [{
                 model: Match,
-                order: [['gameCreation', 'DESC']],
             }],
             attributes: [ 'MatchId' ],
+            order: [['Match', 'gameCreation', 'DESC']],
         });
-
+        for (let match of playerMatches) {
+            console.log(match.Match.gameCreation);
+        }
         for (let i = 0; i < playerMatches.length; i++) {
             const match = {};
             match.mydata = await SummonerMatch.findOne({
@@ -92,9 +94,8 @@ router.route('/summoner')
         return res.render('result', { matches: data });
     })
     .post(async (req, res, next) => {
-        let matches = [], summoner;
+        let summoner;
         try {
-            let matches = [];
             const name = req.body.name.replace(/ /gi, '').toLowerCase();
             console.log(name);
             summoner = await Summoner.findOne({ // 검색한 소환사 정보 저장 & 불러오기
