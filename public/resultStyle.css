@@ -1,5 +1,6 @@
 * {
     margin: 0;
+    box-sizing: border-box;
 }
 
 .blind {
@@ -20,11 +21,11 @@
 }
 
 .win {
-    background-color: yellowgreen;
+    background-color: #1982c4;
 }
 
 .lose {
-    background-color: peru;
+    background-color: #ff595e;
 }
 
 .match {
