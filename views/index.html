@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap");
+
+      * {
+        font-family: "Nanum Gothic", sans-serif;
+      }
+    </style>
     <title>롤 전적검색</title>
-</head>
-<body>
+    {% block head %} {% endblock %}
+  </head>
+  <body>
     <form id="name" action="/summoner" method="post">
-        <div>
-            <input type="text" name="name">
-            <input type="submit" value="검색">
-        </div>
+      <div>
+        <input type="text" name="name" />
+        <input type="submit" value="검색" />
+      </div>
     </form>
-</body>
-<script>
+    {% block content %} {% endblock %}
+  </body>
+  <script>
     window.onload = () => {
-        if (new URL(location.href).searchParams.get('searchError')) {
-            alert(new URL(location.href).searchParams.get('searchError'));
-        }
+      if (new URL(location.href).searchParams.get("searchError")) {
+        alert(new URL(location.href).searchParams.get("searchError"));
+      }
     };
-</script>
+  </script>
 </html>
