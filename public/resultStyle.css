@@ -1,6 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Jua&display=swap");
+
 * {
     margin: 0;
     box-sizing: border-box;
+    font-family: "Jua", sans-serif;
+    font-size: 1.2rem;
+}
+
+body {
+    background-color: #ffccd5;
+    text-align: center;
 }
 
 .blind {
@@ -77,4 +86,32 @@ img {
     height: 40px;
     display: inline-block;
     background-color: white;
+}
+
+button {
+    width: 120px;
+    height: 40px;
+    background: none;
+    border: 3px solid #ffbe0b;
+    border-radius: 0.5em;
+    color: #ffbe0b;
+    text-shadow: 0 0 3px black;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+
+#main {
+    font-size: 3.6rem;
+    color: #f87060;
+}
+
+#name {
+    display: inline-block;
+}
+
+#refresh-form {
+    display: inline-block;
 }

@@ -1,12 +1,9 @@
-{% extends 'index.html' %} {% block head %}
-<link rel="stylesheet" href="resultStyle.css" />
-{% endblock %} {% block content %}
-<div>
-  <form action="/match" method="post">
-    <input class="blind" value="{{name}}" name="name" />
-    <input type="submit" value="새로고침" id="refresh" />
-  </form>
-</div>
+{% extends 'index.html' %} {% block content %}
+
+<form id="refresh-form" action="/match" method="post">
+  <input class="blind" value="{{name}}" name="name" />
+  <button id="refresh">새로고침</button>
+</form>
 {% if matches.length > 0 %}
 <div id="summonerInfo"></div>
 {% for match in matches %}
