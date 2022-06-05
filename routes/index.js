@@ -95,6 +95,7 @@ router.route('/summoner')
     })
     .post(async (req, res, next) => {
         let summoner;
+        console.log('req: ', req);
         try {
             const name = req.body.name.replace(/ /gi, '').toLowerCase();
             console.log(name);
@@ -105,7 +106,7 @@ router.route('/summoner')
                 summoner = await createSummonerByName(name);
             }
             return res.redirect(`/summoner?name=${req.body.name}`);
-        } catch (error) {
+        } catch (err) {
             if (err.response.status === 404) {
                 return res.redirect(`/?searchError=${req.body.name}을 찾을 수 없습니다.`);
             }
@@ -173,7 +174,8 @@ router.post('/match', async (req, res, next) => {
                         });
                         console.log('exUser:', exUser);
                         if (!exUser) {
-                            await createSummonerByPuuid(matchDataByMatchId.metadata.participants[i]);
+                            // await createSummonerByPzzuuid(matchDataByMatchId.metadata.participants[i]);
+                            await axios.post('/summoner', { name: matchDataByMatchId.info.participants[i].summonerName });
                         }
                         const find = await SummonerMatch.findOne({
                             where: {
