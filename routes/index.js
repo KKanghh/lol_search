@@ -13,6 +13,21 @@ async function createSummonerByName(name) {
         const result = await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURIComponent(name) + `?api_key=${process.env.api_key}`);
         const playerData = result.data;
         console.log('가져온 데이터:', playerData);
+        const summoner = await Summoner.findOne({
+            where: { puuid: playerData.puuid }
+        });
+        if (summoner) {
+            return await Summoner.update({
+                name: playerData.name,
+                searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
+                level: playerData.summonerLevel,
+                profileIcon: playerData.profileIcon,
+            }, {
+                where: {
+                    puuid: summoner.puuid,
+                }
+            });
+        }
         return await Summoner.create({
             name: playerData.name,
             searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
@@ -33,7 +48,22 @@ async function createSummonerByPuuid(puuid) {
         const result = await axios.get('https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + puuid + `?api_key=${process.env.api_key}`);
         const playerData = result.data;
         console.log(playerData);
-        await Summoner.create({
+        const summoner = await Summoner.findOne({
+            where: { puuid: playerData.puuid }
+        });
+        if (summoner) {
+            return await Summoner.update({
+                name: playerData.name,
+                searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
+                level: playerData.summonerLevel,
+                profileIcon: playerData.profileIcon,
+            }, {
+                where: {
+                    puuid: summoner.puuid,
+                }
+            });
+        }
+        return await Summoner.create({
             name: playerData.name,
             searchName: playerData.name.replace(/ /gi, '').toLowerCase(),
             puuid: playerData.puuid,
@@ -174,8 +204,8 @@ router.post('/match', async (req, res, next) => {
                         });
                         console.log('exUser:', exUser);
                         if (!exUser) {
-                            // await createSummonerByPzzuuid(matchDataByMatchId.metadata.participants[i]);
-                            await axios.post('/summoner', { name: matchDataByMatchId.info.participants[i].summonerName });
+                            await createSummonerByPuuid(matchDataByMatchId.metadata.participants[i]);
+                            // await axios.post('/summoner', { name: matchDataByMatchId.info.participants[i].summonerName });
                         }
                         const find = await SummonerMatch.findOne({
                             where: {
