@@ -8,7 +8,7 @@
 }
 
 body {
-    background-color: #ffccd5;
+    background-color: #dee2e6;
     text-align: center;
 }
 
@@ -47,17 +47,16 @@ body {
 
 .summoner {
     display: flex;
-    /* width: 45%; */
-    height: 124px;
+    width: 50%;
+    height: 20%;
     align-items: center;
     justify-content: space-between;
 }
 
-
-img {
-    width: 124px;
-    height: 124px;
+.champion-image {
+    height: 100%;
 }
+
 .team200 {
     background-color: #7c0a02;
 }
@@ -67,7 +66,8 @@ img {
 }
 
 .item {
-    display: inline-block;
+    display: flex;
+    flex-wrap: wrap;
     width: 140px;
     height: 85px;
 }
@@ -77,13 +77,14 @@ img {
 }
 
 .item-img {
-    width: 40px;
-    height: 40px;
+    width: 33%;
+    height: 50%;
+    border: 0.2px solid black;
 }
 
 .no-item {
-    width: 40px;
-    height: 40px;
+    width: 33%;
+    height: 50%;
     display: inline-block;
     background-color: white;
 }
@@ -114,4 +115,8 @@ button:hover {
 
 #refresh-form {
     display: inline-block;
+}
+
+.summoner-data {
+    font-size: 0.9rem;
 }

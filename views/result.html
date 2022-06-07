@@ -10,6 +10,7 @@
 <div class="container">
   <div class="myInfo {% if match.mydata.win %}win{% else %}lose{% endif %}">
     <img
+      class="champion-image"
       src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if match.mydata.champion === 'FiddleSticks' %}Fiddlesticks{% else %}{{match.mydata.champion}}{% endif %}.png"
     />
     <div class="gamemode">
@@ -33,6 +34,7 @@
     {% for el in match.matchInfo %}
     <div class="summoner team{{el.team}}">
       <img
+        class="champion-image"
         src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/champion/{% if el.champion === 'FiddleSticks' %}Fiddlesticks{% else %}{{el.champion}}{% endif %}.png"
       />
       <span class="summoner-data"
@@ -43,32 +45,32 @@
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item1}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %} {% if el.item2 %}<img
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item2}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %} {% if el.item3 %}<img
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item3}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %} {% if el.item4 %}<img
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item4}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %} {% if el.item5 %}<img
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item5}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %} {% if el.item6 %}<img
           class="item-img"
           src="http://ddragon.leagueoflegends.com/cdn/12.9.1/img/item/{{el.item6}}.png"
         />{% else %}
-        <div class="no-item"></div>
+        <div class="no-item item-img"></div>
         {% endif %}
       </div>
     </div>
